@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisador Lotofácil</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Analisador de Resultados Lotofácil</h1>
+        
+        <!-- Mensagem que será atualizada durante o processo -->
+        <p id="info-concurso">Pronto para analisar os últimos 15 concursos...</p>
+
+        <div id="jogos">
+            <label for="qtd-jogos">Quantidade de Jogos a Gerar:</label>
+            <input type="number" id="qtd-jogos" value="1" min="1">
+            <button onclick="gerarJogosUsuario()">Gerar Jogos</button>
+        </div>
+
+        <h3>Jogos Gerados:</h3>
+        <ul id="jogos-gerados"></ul>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
