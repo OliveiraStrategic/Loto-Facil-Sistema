@@ -12,27 +12,33 @@
         <h1>Analisador de Resultados Lotofácil</h1>
 
         <!-- Mensagem que será atualizada durante o processo -->
-        <p id="info-concurso">Pronto para analisar os últimos concursos...</p>
+        <p id="info-concurso">Pronto para analisar os últimos 15 concursos...</p>
 
-        <div id="jogos">
-            <label for="qtd-jogos">Quantidade de Jogos a Gerar:</label>
-            <input type="number" id="qtd-jogos" value="1" min="1">
-            <label for="qtd-concursos">Quantidade de Concursos a Analisar:</label>
-            <input type="number" id="qtd-concursos" value="15" min="1">
+        <div class="input-container">
+            <div class="input-group">
+                <label for="qtd-jogos">Quantidade de Jogos a Gerar:</label>
+                <input type="number" id="qtd-jogos" value="1" min="1">
+            </div>
+            <div class="input-group">
+                <label for="qtd-concursos">Quantidade de Concursos a Analisar:</label>
+                <input type="number" id="qtd-concursos" value="15" min="1">
+            </div>
+            <div class="input-group">
+                <label for="numeros-fixos-input">Números Fixos (separados por vírgula):</label>
+                <input type="text" id="numeros-fixos-input" placeholder="Ex: 5, 10">
+            </div>
             <button onclick="gerarJogosUsuario()">Gerar Jogos</button>
-        </div>
-
-        <div id="numeros-fixos">
-            <label for="numeros-fixos-input">Números Fixos (separados por vírgula):</label>
-            <input type="text" id="numeros-fixos-input" placeholder="Ex: 5, 10">
         </div>
 
         <h3>Jogos Gerados:</h3>
         <ul id="jogos-gerados"></ul>
 
         <h3>Gráficos de Análise</h3>
-        <canvas id="frequenciasChart" width="400" height="200"></canvas>
-        <canvas id="jogosGeradosChart" width="400" height="200"></canvas>
+        <div class="charts">
+            <canvas id="frequenciasChart" class="chart"></canvas> <!-- Gráfico de Frequências -->
+            <canvas id="distribuicaoChart" class="chart"></canvas> <!-- Gráfico de Distribuição -->
+            <canvas id="jogosGeradosChart" class="chart"></canvas> <!-- Gráfico de Jogos Gerados -->
+        </div>
     </div>
 
     <script src="script.js"></script>

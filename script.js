@@ -8,7 +8,7 @@ async function getConcurso(concurso) {
     return await response.json();
 }
 
-// Função que busca os últimos N concursos e retorna os números mais frequentes
+// Função que busca os últimos concursos e retorna os números mais frequentes
 async function buscarUltimosConcursos(qtdConcursos) {
     const response = await fetch(apiUrlLatest);
     const data = await response.json();
@@ -32,8 +32,7 @@ function numerosMaisFrequentes(frequencias, qtdNumeros = 15) {
         frequencia: frequencia
     }));
 
-    // Ordena por frequência
-    numerosComFrequencia.sort((a, b) => b.frequencia - a.frequencia);  
+    numerosComFrequencia.sort((a, b) => b.frequencia - a.frequencia);  // Ordena por frequência
     return numerosComFrequencia.slice(0, qtdNumeros).map(item => item.numero);  // Pega os mais frequentes
 }
 
@@ -67,60 +66,95 @@ function exibirJogos(jogos) {
     });
 }
 
-// Função para criar o gráfico de frequências
-function criarGraficoFrequencias(frequencias) {
-    const ctx = document.getElementById('frequenciasChart').getContext('2d');
-    const labels = Array.from({ length: 25 }, (_, i) => i + 1); // Números de 1 a 25
-    const chart = new Chart(ctx, {
+// Função para gerar gráficos detalhados
+function gerarGraficos(frequencias, jogos) {
+    const ctxFrequencias = document.getElementById('frequenciasChart').getContext('2d');
+    const ctxJogosGerados = document.getElementById('jogosGeradosChart').getContext('2d');
+
+    // Gráfico de frequências
+    new Chart(ctxFrequencias, {
         type: 'bar',
         data: {
-            labels: labels,
+            labels: Array.from({length: 25}, (_, i) => i + 1),
             datasets: [{
-                label: 'Frequência dos Números',
+                label: 'Frequência',
                 data: frequencias,
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 1
             }]
         },
         options: {
+            responsive: true,
             scales: {
                 y: {
                     beginAtZero: true
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Números'
+                    }
                 }
             }
         }
     });
-}
 
-// Função para criar o gráfico de jogos gerados
-function criarGraficoJogosGerados(jogos) {
-    const ctx = document.getElementById('jogosGeradosChart').getContext('2d');
-    const labels = Array.from({ length: jogos.length }, (_, i) => `Jogo ${i + 1}`);
-    const chartData = jogos.map(jogo => jogo.reduce((acc, numero) => acc + 1, 0)); // Contagem de números em cada jogo
-    const chart = new Chart(ctx, {
+    // Gráfico de jogos gerados
+    const jogosFrequencias = Array(25).fill(0);  // Frequência de números nos jogos gerados
+    jogos.forEach(jogo => {
+        jogo.forEach(num => {
+            jogosFrequencias[num - 1]++;  // Conta a frequência de cada número
+        });
+    });
+
+    new Chart(ctxJogosGerados, {
         type: 'pie',
         data: {
-            labels: labels,
+            labels: Array.from({length: 25}, (_, i) => i + 1),
             datasets: [{
-                label: 'Distribuição dos Jogos Gerados',
-                data: chartData,
-                backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                borderColor: 'rgba(153, 102, 255, 1)',
-                borderWidth: 1
+                label: 'Números nos Jogos Gerados',
+                data: jogosFrequencias,
+                backgroundColor: jogosFrequencias.map(() => `hsl(${Math.random() * 360}, 100%, 50%)`),
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+}
+
+// Função para gerar gráfico de distribuição
+function gerarGraficoDistribuicao(frequencias, qtdConcursos) {
+    const ctxDistribuicao = document.getElementById('distribuicaoChart').getContext('2d');
+
+    new Chart(ctxDistribuicao, {
+        type: 'line',
+        data: {
+            labels: Array.from({length: 25}, (_, i) => i + 1),
+            datasets: [{
+                label: 'Frequência de Sorteios',
+                data: frequencias.map(freq => freq / qtdConcursos), // Normaliza pela quantidade de concursos
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                fill: true,
             }]
         },
         options: {
             responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Frequência Normalizada'
+                    }
                 },
-                tooltip: {
-                    callbacks: {
-                        label: function (tooltipItem) {
-                            return `${tooltipItem.label}: ${tooltipItem.raw}`;
-                        }
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Números'
                     }
                 }
             }
@@ -129,18 +163,10 @@ function criarGraficoJogosGerados(jogos) {
 }
 
 // Função principal que coordena a análise e a geração dos jogos
-async function analisarEGerarJogos() {
-    const qtdJogos = parseInt(document.getElementById('qtd-jogos').value);
-    const qtdConcursos = parseInt(document.getElementById('qtd-concursos').value);
-    
-    if (qtdConcursos < 1) {
-        alert('Por favor, insira uma quantidade válida de concursos.');
-        return;
-    }
-
+async function analisarEGerarJogos(qtdJogos, qtdConcursos) {
     // Atualiza a mensagem durante o processamento
     document.getElementById('info-concurso').innerText = `Analisando os últimos ${qtdConcursos} concursos...`;
-
+    
     // Faz a análise dos últimos concursos
     const frequencias = await buscarUltimosConcursos(qtdConcursos);
     const numerosFrequentes = numerosMaisFrequentes(frequencias);
@@ -152,17 +178,18 @@ async function analisarEGerarJogos() {
     // Exibe os jogos gerados
     exibirJogos(jogos);
 
-    // Cria os gráficos
-    criarGraficoFrequencias(frequencias);
-    criarGraficoJogosGerados(jogos);
+    // Gera os gráficos
+    gerarGraficos(frequencias, jogos);
+    gerarGraficoDistribuicao(frequencias, qtdConcursos);
 }
 
 // Função para obter a quantidade de jogos desejada pelo usuário e iniciar o processo
 function gerarJogosUsuario() {
     const qtdJogos = parseInt(document.getElementById('qtd-jogos').value);
-    if (qtdJogos > 0) {
-        analisarEGerarJogos();
+    const qtdConcursos = parseInt(document.getElementById('qtd-concursos').value);
+    if (qtdJogos > 0 && qtdConcursos > 0) {
+        analisarEGerarJogos(qtdJogos, qtdConcursos);
     } else {
-        alert('Por favor, insira uma quantidade válida de jogos.');
+        alert('Por favor, insira uma quantidade válida de jogos e concursos.');
     }
 }
