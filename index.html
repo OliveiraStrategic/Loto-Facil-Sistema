@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analisador Lotofácil</title>
+    <title>Analisador Lotofácil com Machine Learning</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script> <!-- Adicionando TensorFlow.js -->
 </head>
 <body>
     <div class="container">
@@ -40,6 +41,9 @@
             <canvas id="jogosGeradosChart" class="chart"></canvas> <!-- Gráfico de Jogos Gerados -->
         </div>
     </div>
+
+    <!-- Painel de logs -->
+    <div id="log-panel" class="log-panel"></div>
 
     <script src="script.js"></script>
 </body>
